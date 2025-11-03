@@ -1,0 +1,382 @@
+.cart-page {
+  min-height: 100vh;
+  background: white;
+}
+
+.cart-main {
+  padding-top: 83px; /* Account for fixed header */
+  padding-bottom: 60px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.cart-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 40px;
+  color: #242428;
+  margin: 40px 0;
+}
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 60px;
+  align-items: start;
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cart-item {
+  background: white;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  padding: 25px;
+  display: grid;
+  grid-template-columns: 96px 1fr auto auto;
+  gap: 24px;
+  align-items: center;
+  position: relative;
+}
+
+.item-image {
+  width: 96px;
+  height: 128px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: start;
+}
+
+.item-brand {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #6e6e77;
+}
+
+.item-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 28px;
+  color: #242428;
+  margin: 0;
+}
+
+.item-size {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #6e6e77;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.quantity-btn {
+  width: 32px;
+  height: 32px;
+  background: #fcfbf8;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quantity-btn:hover {
+  background: #f5f5f5;
+}
+
+.quantity-btn img {
+  width: 16px;
+  height: 16px;
+}
+
+.quantity {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #242428;
+  min-width: 20px;
+  text-align: center;
+}
+
+.item-price {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  color: #c91d56;
+  justify-self: end;
+}
+
+.remove-btn {
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  transition: transform 0.2s ease;
+}
+
+.remove-btn:hover {
+  transform: scale(1.1);
+}
+
+.remove-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Order Summary */
+.order-summary {
+  background: white;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  padding: 25px;
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+}
+
+.summary-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  color: #242428;
+  margin: 0 0 24px 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.summary-row.total {
+  margin-bottom: 24px;
+}
+
+.summary-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #6e6e77;
+}
+
+.summary-row.total .summary-label {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 28px;
+  color: #242428;
+}
+
+.summary-value {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #6e6e77;
+}
+
+.total-price {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 28px;
+  color: #c91d56 !important;
+}
+
+.summary-divider {
+  height: 1px;
+  background: #e4e4e7;
+  margin: 24px 0;
+}
+
+.discount-section {
+  margin-bottom: 24px;
+}
+
+.discount-input {
+  width: 100%;
+  height: 40px;
+  background: #fcfbf8;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  padding: 0 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #242428;
+  margin-bottom: 12px;
+}
+
+.discount-input::placeholder {
+  color: #6e6e77;
+}
+
+.discount-input:focus {
+  outline: none;
+  border-color: #c91d56;
+}
+
+.apply-code-btn {
+  width: 100%;
+  height: 40px;
+  background: #fcfbf8;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #242428;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.apply-code-btn:hover {
+  background: #f5f5f5;
+}
+
+.checkout-btn {
+  width: 100%;
+  height: 44px;
+  background: #c91d56;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.checkout-btn:hover {
+  background: #b01849;
+  transform: translateY(-1px);
+}
+
+.continue-shopping-btn {
+  width: 100%;
+  height: 40px;
+  background: #fcfbf8;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #242428;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.continue-shopping-btn:hover {
+  background: #f5f5f5;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .order-summary {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .cart-item {
+    grid-template-columns: 80px 1fr;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .item-image {
+    width: 80px;
+    height: 100px;
+  }
+  
+  .item-price {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 8px;
+  }
+  
+  .remove-btn {
+    top: 15px;
+    right: 15px;
+  }
+  
+  .cart-title {
+    font-size: 28px;
+    line-height: 32px;
+  }
+  
+  .container {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-item {
+    padding: 16px;
+  }
+  
+  .quantity-controls {
+    gap: 12px;
+  }
+  
+  .quantity-btn {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .quantity-btn img {
+    width: 14px;
+    height: 14px;
+  }
+}
