@@ -1,3 +1,5 @@
+import React from 'react';
+
 function AIStyling() {
   return (
     <div className="page ai-styling">

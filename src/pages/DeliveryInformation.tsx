@@ -1,3 +1,5 @@
+import React from 'react';
+
 function DeliveryInformation() {
   return (
     <div className="page delivery-information">

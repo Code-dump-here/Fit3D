@@ -1,3 +1,5 @@
+import React from 'react';
+
 function Wishlist() {
   return (
     <div className="page wishlist">

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link } from 'react-router-dom'
 import './ProductCard.css'
 
@@ -8,7 +9,6 @@ export interface ProductCardProps {
   name: string
   price: number
   badges?: string[]
-  imageAlt?: string
   className?: string
 }
 
@@ -19,7 +19,6 @@ function ProductCard({
   name, 
   price, 
   badges = [], 
-  imageAlt,
   className = ''
 }: ProductCardProps) {
   const formatPrice = (price: number) => {

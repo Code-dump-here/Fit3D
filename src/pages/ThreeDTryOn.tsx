@@ -159,7 +159,7 @@ const ThreeDTryOn: React.FC = () => {
     setTimeout(() => {
       const aiResponse: ChatMessage = {
         id: Date.now() + 1,
-        text: generateAIResponse(inputMessage),
+        text: generateAIResponse(),
         isUser: false,
         timestamp: new Date()
       };
@@ -168,7 +168,7 @@ const ThreeDTryOn: React.FC = () => {
     }, 1500);
   };
 
-  const generateAIResponse = (userInput: string): string => {
+  const generateAIResponse = (): string => {
     const responses = [
       "Great choice! I'd recommend pairing that with some accessories for a complete look.",
       "That would look amazing! Have you considered adding a statement piece to make it pop?",
