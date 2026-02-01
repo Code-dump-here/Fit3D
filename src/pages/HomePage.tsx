@@ -5,6 +5,38 @@ import ProductCard from '../components/ProductCard'
 import { Link } from 'react-router-dom'
 import './HomePage.css'
 
+// Mock style categories - replace with actual data from API
+const mockStyleCategories = [
+  {
+    id: 1,
+    title: 'Formal',
+    count: '1.2K',
+    slug: 'formal',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  },
+  {
+    id: 2,
+    title: 'Streetwear',
+    count: '2.3K',
+    slug: 'streetwear',
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+  },
+  {
+    id: 3,
+    title: 'Minimalist',
+    count: '1.8K',
+    slug: 'minimalist',
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+  },
+  {
+    id: 4,
+    title: 'Vintage',
+    count: '950',
+    slug: 'vintage',
+    gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+  },
+]
+
 // Mock product data - replace with actual data from API
 const mockTrendingProducts = [
   {
@@ -96,42 +128,21 @@ function HomePage() {
           <h2 className="section-title">Shop by Style</h2>
           <p className="section-subtitle">Find your aesthetic. Each style tells a story.</p>
           <div className="style-cards">
-            <div className="style-card">
-              <div className="style-card-image">
-                <div className="style-card-gradient"></div>
-              </div>
-              <div className="style-card-content">
-                <h3 className="style-card-title">Formal</h3>
-                <p className="style-card-count">1.2K items</p>
-              </div>
-            </div>
-            <div className="style-card">
-              <div className="style-card-image">
-                <div className="style-card-gradient"></div>
-              </div>
-              <div className="style-card-content">
-                <h3 className="style-card-title">Streetwear</h3>
-                <p className="style-card-count">2.3K items</p>
-              </div>
-            </div>
-            <div className="style-card">
-              <div className="style-card-image">
-                <div className="style-card-gradient"></div>
-              </div>
-              <div className="style-card-content">
-                <h3 className="style-card-title">Minimalist</h3>
-                <p className="style-card-count">1.8K items</p>
-              </div>
-            </div>
-            <div className="style-card">
-              <div className="style-card-image">
-                <div className="style-card-gradient"></div>
-              </div>
-              <div className="style-card-content">
-                <h3 className="style-card-title">Vintage</h3>
-                <p className="style-card-count">950 items</p>
-              </div>
-            </div>
+            {mockStyleCategories.map((category) => (
+              <Link 
+                key={category.id} 
+                to={`/discovery?style=${category.slug}`} 
+                className="style-card"
+              >
+                <div className="style-card-image" style={{ background: category.gradient }}>
+                  <div className="style-card-gradient"></div>
+                </div>
+                <div className="style-card-content">
+                  <h3 className="style-card-title">{category.title}</h3>
+                  <p className="style-card-count">{category.count} items</p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
