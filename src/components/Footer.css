@@ -7,14 +7,14 @@
 .footer-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 64px 32px 0;
+  padding: 72px 32px 0;
 }
 
 .footer-content {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 48px;
-  padding-bottom: 48px;
+  gap: 64px;
+  padding-bottom: 56px;
 }
 
 .footer-section {
@@ -47,7 +47,8 @@
   font-size: 16px;
   line-height: 1.5;
   color: #242428;
-  margin: 0;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
 }
 
 .footer-links {
@@ -56,7 +57,7 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .footer-links li {
