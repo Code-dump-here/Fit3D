@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
 import HomePage from './pages/HomePage'
 import Discovery from './pages/Discovery'
 import LoginPage from './pages/LoginPage'
@@ -18,22 +20,26 @@ import DeliveryInformation from './pages/DeliveryInformation'
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/discovery" element={<Discovery />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/order-history" element={<OrderHistory />} />
-        <Route path="/wishlist" element={<Wishlist />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/3d-try-on" element={<ThreeDTryOn />} />
-        <Route path="/ai-styling" element={<AIStyling />} />
-        <Route path="/shops" element={<Shops />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/delivery-information" element={<DeliveryInformation />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/discovery" element={<Discovery />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/3d-try-on" element={<ThreeDTryOn />} />
+          <Route path="/ai-styling" element={<AIStyling />} />
+          <Route path="/shops" element={<Shops />} />
+          <Route path="/about" element={<About />} />
+          
+          {/* Protected Routes */}
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/order-history" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>} />
+          <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+          <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
+          <Route path="/delivery-information" element={<ProtectedRoute><DeliveryInformation /></ProtectedRoute>} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

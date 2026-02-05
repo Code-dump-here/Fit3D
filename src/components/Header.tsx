@@ -1,12 +1,22 @@
-import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuthContext } from '../context/AuthContext'
 import './Header.css'
 
 function Header() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { user, isAuthenticated, logout } = useAuthContext()
+  const [showUserMenu, setShowUserMenu] = useState(false)
   
   const isActive = (path: string) => {
     return location.pathname === path
+  }
+
+  const handleLogout = () => {
+    logout()
+    setShowUserMenu(false)
+    navigate('/login')
   }
   
   return (
@@ -26,19 +36,54 @@ function Header() {
         </div>
         <div className="header-right">
           <div className="header-icons">
-            <button className="icon-button" aria-label="Favorites">
+            <Link to="/wishlist" className="icon-button" aria-label="Favorites">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
                 <path d="M20 30L18 28C10 20 4 15 4 11C4 7 7 4 11 4C13 4 15 5 16 6C17 5 19 4 21 4C25 4 28 7 28 11C28 15 22 20 14 28L12 30H20Z" fill="currentColor"/>
               </svg>
-            </button>
-            <button className="icon-button" aria-label="Cart">
+            </Link>
+            <Link to="/cart" className="icon-button" aria-label="Cart">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
                 <path d="M10 10H30L28 22H12L10 10ZM12 26C12 27.1 12.9 28 14 28C15.1 28 16 27.1 16 26C16 24.9 15.1 24 14 24C12.9 24 12 24.9 12 26ZM26 26C26 27.1 26.9 28 28 28C29.1 28 30 27.1 30 26C30 24.9 29.1 24 28 24C26.9 24 26 24.9 26 26Z" fill="currentColor"/>
               </svg>
-            </button>
+            </Link>
           </div>
-          <Link to="/login" className="btn-login">Login</Link>
-          <Link to="/signup" className="btn-signup">Sign Up</Link>
+          
+          {isAuthenticated() ? (
+            <div className="user-menu-container">
+              <button 
+                className="user-button"
+                onClick={() => setShowUserMenu(!showUserMenu)}
+              >
+                <span className="user-name">{user?.fullName}</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+              </button>
+              
+              {showUserMenu && (
+                <div className="user-dropdown">
+                  <Link to="/profile" className="dropdown-item" onClick={() => setShowUserMenu(false)}>
+                    Profile
+                  </Link>
+                  <Link to="/order-history" className="dropdown-item" onClick={() => setShowUserMenu(false)}>
+                    Order History
+                  </Link>
+                  <Link to="/wishlist" className="dropdown-item" onClick={() => setShowUserMenu(false)}>
+                    Wishlist
+                  </Link>
+                  <button className="dropdown-item logout-item" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Link to="/login" className="btn-login">Login</Link>
+              <Link to="/signup" className="btn-signup">Sign Up</Link>
+            </>
+          )}
+          
           <div className="search-container">
             <input 
               type="text" 

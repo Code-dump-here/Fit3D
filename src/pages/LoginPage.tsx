@@ -1,13 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuthContext } from '../context/AuthContext'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import './LoginPage.css'
 
 function LoginPage() {
+  const navigate = useNavigate()
+  const { login, isAuthenticated, isLoading, error } = useAuthContext()
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   })
+  const [loginError, setLoginError] = useState<string | null>(null)
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated()) {
+      navigate('/')
+    }
+  }, [isAuthenticated, navigate])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -15,12 +27,20 @@ function LoginPage() {
       ...prev,
       [name]: value
     }))
+    setLoginError(null) // Clear error when user types
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Login attempt:', formData)
-    // TODO: Implement actual login logic
+    setLoginError(null)
+    
+    const result = await login(formData)
+    
+    if (result.success) {
+      navigate('/') // Redirect to home on success
+    } else {
+      setLoginError(result.message || 'Login failed. Please check your credentials.')
+    }
   }
 
   return (
@@ -37,6 +57,19 @@ function LoginPage() {
                 <p className="login-subtitle">Sign in to access your wishlist and try-ons.</p>
                 
                 <form onSubmit={handleSubmit} className="login-form">
+                  {(loginError || error) && (
+                    <div className="error-message" style={{
+                      padding: '12px',
+                      backgroundColor: '#fee',
+                      border: '1px solid #fcc',
+                      borderRadius: '4px',
+                      color: '#c00',
+                      marginBottom: '16px'
+                    }}>
+                      {loginError || error}
+                    </div>
+                  )}
+                  
                   <div className="form-group">
                     <label htmlFor="email" className="form-label">Email Address</label>
                     <input
@@ -47,6 +80,7 @@ function LoginPage() {
                       onChange={handleInputChange}
                       className="form-input"
                       required
+                      disabled={isLoading}
                     />
                   </div>
 
@@ -60,11 +94,12 @@ function LoginPage() {
                       onChange={handleInputChange}
                       className="form-input"
                       required
+                      disabled={isLoading}
                     />
                   </div>
 
-                  <button type="submit" className="login-button">
-                    Sign In
+                  <button type="submit" className="login-button" disabled={isLoading}>
+                    {isLoading ? 'Signing In...' : 'Sign In'}
                   </button>
                 </form>
 

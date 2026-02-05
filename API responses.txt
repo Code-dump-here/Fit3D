@@ -1,0 +1,696 @@
+================================================================================
+API RESPONSES REFERENCE FOR FRONTEND
+Fit3D Backend API Documentation
+================================================================================
+
+=== AUTHENTICATION APIs (/api/auth) ===
+
+--------------------------------------------------------------------------------
+POST /api/auth/login
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "email": "string",
+  "password": "string"
+}
+
+Success Response (200):
+{
+  "success": true,
+  "message": "string",
+  "accessToken": "string",
+  "refreshToken": "string",
+  "accessTokenExpiration": "2026-02-03T10:30:00Z",
+  "refreshTokenExpiration": "2026-02-10T10:30:00Z",
+  "user": {
+    "id": "guid",
+    "fullName": "string",
+    "email": "string",
+    "phone": "string",
+    "role": 0,  // 0=Customer, 1=Admin, 2=Staff, 3=Shop
+    "isVerified": true
+  }
+}
+
+Error Response (400):
+{
+  "success": false,
+  "message": "string",
+  "accessToken": null,
+  "refreshToken": null,
+  "accessTokenExpiration": null,
+  "refreshTokenExpiration": null,
+  "user": null
+}
+
+--------------------------------------------------------------------------------
+POST /api/auth/register
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "fullName": "string",
+  "email": "string",
+  "password": "string",
+  "phone": "string",
+  "address": "string"
+}
+
+Response: Same as login response
+
+--------------------------------------------------------------------------------
+POST /api/auth/refresh-token
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "refreshToken": "string"
+}
+
+Success Response (200):
+{
+  "success": true,
+  "message": "string",
+  "accessToken": "string",
+  "refreshToken": "string",
+  "accessTokenExpiration": "2026-02-03T10:30:00Z",
+  "refreshTokenExpiration": "2026-02-10T10:30:00Z"
+}
+
+--------------------------------------------------------------------------------
+POST /api/auth/revoke-token (Requires Auth)
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "refreshToken": "string"
+}
+
+Response (200):
+{
+  "message": "Token revoked successfully"
+}
+
+--------------------------------------------------------------------------------
+GET /api/auth/me (Requires Auth)
+--------------------------------------------------------------------------------
+Response (200):
+{
+  "id": "guid",
+  "fullName": "string",
+  "email": "string",
+  "phone": "string",
+  "role": 0,
+  "isVerified": true
+}
+
+
+=== USER APIs (/api/users) ===
+
+--------------------------------------------------------------------------------
+GET /api/users?page=1&size=10&search=keyword
+--------------------------------------------------------------------------------
+Response (200):
+{
+  "items": [
+    {
+      "id": "guid",
+      "fullName": "string",
+      "email": "string",
+      "phone": "string",
+      "address": "string",
+      "role": 0,
+      "isActive": true,
+      "createdAt": "2026-02-03T10:30:00Z",
+      "updatedAt": "2026-02-03T10:30:00Z"
+    }
+  ],
+  "pageNumber": 1,
+  "pageSize": 10,
+  "totalPages": 5,
+  "totalCount": 50,
+  "hasPrevious": false,
+  "hasNext": true
+}
+
+--------------------------------------------------------------------------------
+GET /api/users/all
+--------------------------------------------------------------------------------
+Response (200):
+[
+  {
+    "id": "guid",
+    "fullName": "string",
+    "email": "string",
+    "phone": "string",
+    "address": "string",
+    "role": 0,
+    "isActive": true,
+    "createdAt": "2026-02-03T10:30:00Z",
+    "updatedAt": "2026-02-03T10:30:00Z"
+  }
+]
+
+--------------------------------------------------------------------------------
+GET /api/users/{id}
+--------------------------------------------------------------------------------
+Response (200):
+{
+  "id": "guid",
+  "fullName": "string",
+  "email": "string",
+  "phone": "string",
+  "address": "string",
+  "role": 0,
+  "isActive": true,
+  "createdAt": "2026-02-03T10:30:00Z",
+  "updatedAt": "2026-02-03T10:30:00Z"
+}
+
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+POST /api/users
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "fullName": "string",
+  "email": "string",
+  "password": "string",
+  "phone": "string",
+  "address": "string",
+  "role": 0
+}
+
+Response (201): Returns UserDTO (same structure as GET)
+
+--------------------------------------------------------------------------------
+PUT /api/users/{id}
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "fullName": "string",
+  "email": "string",
+  "phone": "string",
+  "address": "string",
+  "role": 0,
+  "isActive": true
+}
+
+Response (200): Returns UserDTO
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+DELETE /api/users/{id}
+--------------------------------------------------------------------------------
+Response (204): No Content
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+POST /api/users/{id}/change-password
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "oldPassword": "string",
+  "newPassword": "string"
+}
+
+Response (204): No Content
+Response (400): Bad Request
+
+
+=== CATEGORY APIs (/api/categories) ===
+
+--------------------------------------------------------------------------------
+GET /api/categories?page=1&size=10&search=keyword
+--------------------------------------------------------------------------------
+Response (200):
+{
+  "items": [
+    {
+      "id": "guid",
+      "name": "string",
+      "description": "string",
+      "imageUrl": "string",
+      "displayOrder": 0,
+      "isActive": true,
+      "createdAt": "2026-02-03T10:30:00Z",
+      "updatedAt": "2026-02-03T10:30:00Z"
+    }
+  ],
+  "pageNumber": 1,
+  "pageSize": 10,
+  "totalPages": 5,
+  "totalCount": 50,
+  "hasPrevious": false,
+  "hasNext": true
+}
+
+--------------------------------------------------------------------------------
+GET /api/categories/all
+--------------------------------------------------------------------------------
+Response (200): Array of CategoryDTO
+[
+  {
+    "id": "guid",
+    "name": "string",
+    "description": "string",
+    "imageUrl": "string",
+    "displayOrder": 0,
+    "isActive": true,
+    "createdAt": "2026-02-03T10:30:00Z",
+    "updatedAt": "2026-02-03T10:30:00Z"
+  }
+]
+
+--------------------------------------------------------------------------------
+GET /api/categories/{id}
+--------------------------------------------------------------------------------
+Response (200): CategoryDTO
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+POST /api/categories
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "name": "string",
+  "description": "string",
+  "imageUrl": "string",
+  "displayOrder": 0,
+  "isActive": true
+}
+
+Response (201): CategoryDTO
+
+--------------------------------------------------------------------------------
+PUT /api/categories/{id}
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "name": "string",
+  "description": "string",
+  "imageUrl": "string",
+  "displayOrder": 0,
+  "isActive": true
+}
+
+Response (200): CategoryDTO
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+DELETE /api/categories/{id}
+--------------------------------------------------------------------------------
+Response (204): No Content
+Response (404): Not Found
+
+
+=== PRODUCT APIs (/api/products) ===
+
+--------------------------------------------------------------------------------
+GET /api/products?page=1&size=10&search=keyword&categoryId=guid
+--------------------------------------------------------------------------------
+Response (200):
+{
+  "items": [
+    {
+      "id": "guid",
+      "name": "string",
+      "description": "string",
+      "price": 99.99,
+      "salePrice": 79.99,
+      "sku": "string",
+      "brand": "string",
+      "imageUrl": "string",
+      "previewModelPath": "string",
+      "modelFilePath": "string",
+      "stockQuantity": 100,
+      "isActive": true,
+      "isFeatured": false,
+      "categoryId": "guid",
+      "categoryName": "string",
+      "productColors": [
+        {
+          "id": "guid",
+          "colorName": "Red",
+          "colorCode": "#FF0000",
+          "imageUrl": "string",
+          "stockQuantity": 50
+        }
+      ],
+      "productSizes": [
+        {
+          "id": "guid",
+          "size": "L",
+          "stockQuantity": 30
+        }
+      ],
+      "createdAt": "2026-02-03T10:30:00Z",
+      "updatedAt": "2026-02-03T10:30:00Z"
+    }
+  ],
+  "pageNumber": 1,
+  "pageSize": 10,
+  "totalPages": 5,
+  "totalCount": 50,
+  "hasPrevious": false,
+  "hasNext": true
+}
+
+--------------------------------------------------------------------------------
+GET /api/products/all
+--------------------------------------------------------------------------------
+Response (200): Array of ProductDTO
+
+--------------------------------------------------------------------------------
+GET /api/products/{id}
+--------------------------------------------------------------------------------
+Response (200): ProductDTO
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+POST /api/products
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "name": "string",
+  "description": "string",
+  "price": 99.99,
+  "salePrice": 79.99,
+  "sku": "string",
+  "brand": "string",
+  "imageUrl": "string",
+  "modelFilePath": "string",
+  "previewModelPath": "string",
+  "stockQuantity": 100,
+  "isActive": true,
+  "isFeatured": false,
+  "categoryId": "guid",
+  "productColors": [
+    {
+      "colorName": "Red",
+      "colorCode": "#FF0000",
+      "imageUrl": "string",
+      "stockQuantity": 50
+    }
+  ],
+  "productSizes": [
+    {
+      "size": "L",
+      "stockQuantity": 30
+    }
+  ]
+}
+
+Response (201): ProductDTO
+
+--------------------------------------------------------------------------------
+PUT /api/products/{id}
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "name": "string",
+  "description": "string",
+  "price": 99.99,
+  "salePrice": 79.99,
+  "sku": "string",
+  "brand": "string",
+  "imageUrl": "string",
+  "stockQuantity": 100,
+  "isActive": true,
+  "isFeatured": false,
+  "categoryId": "guid"
+}
+
+Response (200): ProductDTO
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+DELETE /api/products/{id}
+--------------------------------------------------------------------------------
+Response (204): No Content
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+POST /api/products/{id}/colors
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "colorName": "Blue",
+  "colorCode": "#0000FF",
+  "imageUrl": "string",
+  "stockQuantity": 20
+}
+
+Response (200): ProductDTO
+Response (400): Bad Request
+
+--------------------------------------------------------------------------------
+DELETE /api/products/colors/{colorId}
+--------------------------------------------------------------------------------
+Response (204): No Content
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+POST /api/products/{id}/sizes
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "size": "XL",
+  "stockQuantity": 15
+}
+
+Response (200): ProductDTO
+Response (400): Bad Request
+
+--------------------------------------------------------------------------------
+DELETE /api/products/sizes/{sizeId}
+--------------------------------------------------------------------------------
+Response (204): No Content
+Response (404): Not Found
+
+
+=== CART APIs (/api/cart) ===
+
+--------------------------------------------------------------------------------
+GET /api/cart/{userId}
+--------------------------------------------------------------------------------
+Response (200):
+[
+  {
+    "id": "guid",
+    "productId": "guid",
+    "productName": "string",
+    "productPrice": 99.99,
+    "productImageUrl": "string",
+    "quantity": 2,
+    "size": "L",
+    "color": "Red",
+    "totalPrice": 199.98
+  }
+]
+
+--------------------------------------------------------------------------------
+POST /api/cart
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "userId": "guid",
+  "productId": "guid",
+  "quantity": 1,
+  "size": "L",
+  "color": "Red"
+}
+
+Response (201): CartItemDTO
+Response (400): Bad Request
+
+--------------------------------------------------------------------------------
+PUT /api/cart/{id}
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "quantity": 3
+}
+
+Response (200): CartItemDTO
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+DELETE /api/cart/{id}
+--------------------------------------------------------------------------------
+Response (204): No Content
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+DELETE /api/cart/user/{userId}
+--------------------------------------------------------------------------------
+Response (204): No Content
+
+
+=== ORDER APIs (/api/orders) ===
+
+--------------------------------------------------------------------------------
+GET /api/orders?page=1&size=10&userId=guid&status=0
+--------------------------------------------------------------------------------
+Response (200):
+{
+  "items": [
+    {
+      "id": "guid",
+      "orderNumber": "ORD-2026-0001",
+      "totalAmount": 299.97,
+      "discountAmount": 20.00,
+      "shippingFee": 10.00,
+      "status": 0,
+      "paymentStatus": 0,
+      "paymentMethod": "Credit Card",
+      "shippingAddress": "string",
+      "receiverName": "string",
+      "receiverPhone": "string",
+      "note": "string",
+      "shippedAt": "2026-02-03T10:30:00Z",
+      "deliveredAt": "2026-02-05T10:30:00Z",
+      "userId": "guid",
+      "userName": "string",
+      "orderItems": [
+        {
+          "id": "guid",
+          "quantity": 2,
+          "unitPrice": 99.99,
+          "totalPrice": 199.98,
+          "size": "L",
+          "color": "Red",
+          "productId": "guid",
+          "productName": "string",
+          "productImageUrl": "string"
+        }
+      ],
+      "createdAt": "2026-02-03T10:30:00Z",
+      "updatedAt": "2026-02-03T10:30:00Z"
+    }
+  ],
+  "pageNumber": 1,
+  "pageSize": 10,
+  "totalPages": 5,
+  "totalCount": 50,
+  "hasPrevious": false,
+  "hasNext": true
+}
+
+--------------------------------------------------------------------------------
+GET /api/orders/{id}
+--------------------------------------------------------------------------------
+Response (200): OrderDTO
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+POST /api/orders
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "discountAmount": 20.00,
+  "shippingFee": 10.00,
+  "paymentMethod": "Credit Card",
+  "shippingAddress": "string",
+  "receiverName": "string",
+  "receiverPhone": "string",
+  "note": "string",
+  "userId": "guid",
+  "orderItems": [
+    {
+      "productId": "guid",
+      "quantity": 2,
+      "size": "L",
+      "color": "Red"
+    }
+  ]
+}
+
+Response (201): OrderDTO
+Response (400): Bad Request (e.g., insufficient stock)
+
+--------------------------------------------------------------------------------
+PUT /api/orders/{id}
+--------------------------------------------------------------------------------
+Request Body:
+{
+  "status": 1,
+  "paymentStatus": 1,
+  "shippedAt": "2026-02-03T10:30:00Z",
+  "deliveredAt": "2026-02-05T10:30:00Z",
+  "note": "string"
+}
+
+Response (200): OrderDTO
+Response (404): Not Found
+
+--------------------------------------------------------------------------------
+DELETE /api/orders/{id}
+--------------------------------------------------------------------------------
+Response (204): No Content
+Response (404): Not Found
+
+
+=== 3D MODEL APIs (/api/models) ===
+
+--------------------------------------------------------------------------------
+POST /api/models/upload?type=source
+--------------------------------------------------------------------------------
+Request: Multipart form-data with file
+Query Parameters:
+  - type: "source" or "preview"
+
+Response (200):
+{
+  "filePath": "uploads/source-models/filename.glb"
+}
+
+Response (400): Bad Request
+
+--------------------------------------------------------------------------------
+GET /api/models/download/{productId}?userId=guid
+--------------------------------------------------------------------------------
+Response (200): File download (application/octet-stream)
+Response (403): Forbidden (User has not purchased this product)
+Response (404): Not Found
+
+
+================================================================================
+ENUMS REFERENCE
+================================================================================
+
+UserRole:
+  0 = Customer
+  1 = Admin
+  2 = Staff
+  3 = Shop
+
+OrderStatus:
+  0 = Pending
+  1 = Confirmed
+  2 = Processing
+  3 = Shipped
+  4 = Delivered
+  5 = Cancelled
+  6 = Returned
+
+PaymentStatus:
+  0 = Pending
+  1 = Paid
+  2 = Failed
+  3 = Refunded
+
+
+================================================================================
+NOTES
+================================================================================
+
+1. All timestamps are in ISO 8601 format (e.g., "2026-02-03T10:30:00Z")
+2. GUIDs are used for all entity IDs
+3. Pagination is available for most list endpoints with page and size parameters
+4. Authentication is required for endpoints marked "(Requires Auth)"
+5. Include the access token in the Authorization header: "Bearer {accessToken}"
+6. Most successful POST requests return 201 (Created)
+7. Successful DELETE requests return 204 (No Content)
+8. Not found resources return 404
+9. Bad requests return 400 with error message
+
+================================================================================
