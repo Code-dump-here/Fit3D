@@ -5,9 +5,10 @@
 }
 
 .discovery-container {
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 48px 52px;
+  padding: 48px 80px;
+  width: 100%;
 }
 
 .discovery-header {
@@ -60,7 +61,8 @@
 .products-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 32px;
+  width: 100%;
 }
 
 @media (max-width: 1200px) {

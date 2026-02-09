@@ -1,98 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import ProductCard from '../components/ProductCard'
+import { useProducts, useCategories } from '../hooks/useProducts'
 import './Discovery.css'
 
-// Mock product data - replace with actual data from API
-const mockProducts = [
-  {
-    id: 1,
-    brand: 'Local Brand Studio',
-    name: 'Oversized Cotton Tee',
-    price: 45,
-    badges: ['Streetwear', 'New'],
-  },
-  {
-    id: 2,
-    brand: 'Minimal Co.',
-    name: 'Linen Wide Pants',
-    price: 78,
-    badges: ['Minimalist'],
-  },
-  {
-    id: 3,
-    brand: 'Retro Finds',
-    name: 'Vintage Denim Jacket',
-    price: 120,
-    badges: ['Vintage', 'Trending'],
-  },
-  {
-    id: 4,
-    brand: 'Elegance House',
-    name: 'Silk Blend Blouse',
-    price: 95,
-    badges: ['Formal'],
-  },
-  {
-    id: 5,
-    brand: 'Cozy Studio',
-    name: 'Cropped Knit Cardigan',
-    price: 62,
-    badges: ['Minimalist', 'New'],
-  },
-  {
-    id: 6,
-    brand: 'Street Culture',
-    name: 'High-Waist Cargo Pants',
-    price: 85,
-    badges: ['Streetwear'],
-  },
-  {
-    id: 7,
-    brand: 'Bohemian Dreams',
-    name: 'Printed Midi Dress',
-    price: 110,
-    badges: ['Vintage'],
-  },
-  {
-    id: 8,
-    brand: 'Professional Line',
-    name: 'Tailored Blazer',
-    price: 145,
-    badges: ['Formal', 'Trending'],
-  },
-  {
-    id: 9,
-    brand: 'Coalstar Comfort',
-    name: 'Striped Knit Sweater',
-    price: 68,
-    badges: ['Minimalist', 'New'],
-  },
-  {
-    id: 10,
-    brand: 'Urban Ege',
-    name: 'Leather Biker Jacket',
-    price: 185,
-    badges: ['Minimalist', 'New'],
-  },
-  {
-    id: 11,
-    brand: 'Free Spirit Co.',
-    name: 'Leather Biker Jacket',
-    price: 98,
-    badges: ['Vintage', 'New'],
-  },
-  {
-    id: 12,
-    brand: 'Classic Elegance',
-    name: 'Leather Biker Jacket',
-    price: 72,
-    badges: ['Formal'],
-  },
-]
-
 function Discovery() {
+  const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [currentPage, setCurrentPage] = useState(1)
+  
+  const { products, pagination, isLoading, error } = useProducts({ 
+    page: currentPage, 
+    size: 12,
+    search: searchQuery,
+    categoryId: selectedCategory 
+  })
+  
+  const { categories } = useCategories()
+
   return (
     <div className="page discovery">
       <Header />
@@ -101,23 +27,139 @@ function Discovery() {
         <div className="discovery-header">
           <div className="discovery-header-left">
             <h1 className="discovery-title">Trending Now</h1>
-            <p className="discovery-count">{mockProducts.length} items</p>
+            <p className="discovery-count">
+              {isLoading ? 'Loading...' : `${pagination?.totalCount || 0} items`}
+            </p>
           </div>
-          <a href="#" className="view-all-link">View All →</a>
+          
+          {/* Category Filter */}
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <select 
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value)
+                setCurrentPage(1)
+              }}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '10px',
+                border: '1px solid #E4E4E7',
+                background: 'white',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontFamily: 'Inter, sans-serif',
+                color: '#242428',
+                minWidth: '180px'
+              }}
+            >
+              <option value="">All Categories</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
         
-        <div className="products-grid">
-          {mockProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              brand={product.brand}
-              name={product.name}
-              price={product.price}
-              badges={product.badges}
-            />
-          ))}
-        </div>
+        {isLoading && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            padding: '60px',
+            color: '#666'
+          }}>
+            Loading products...
+          </div>
+        )}
+        
+        {error && (
+          <div style={{ 
+            padding: '20px',
+            backgroundColor: '#fee',
+            border: '1px solid #fcc',
+            borderRadius: '8px',
+            color: '#c00',
+            margin: '20px 0'
+          }}>
+            Error: {error}
+          </div>
+        )}
+        
+        {!isLoading && !error && products.length === 0 && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            padding: '60px',
+            color: '#666'
+          }}>
+            No products found
+          </div>
+        )}
+        
+        {!isLoading && products.length > 0 && (
+          <>
+            <div className="products-grid">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  brand={product.brand}
+                  name={product.name}
+                  price={product.salePrice || product.price}
+                  image={product.imageUrl}
+                  badges={[
+                    product.isFeatured && 'Featured',
+                    product.salePrice && product.salePrice < product.price && 'Sale',
+                  ].filter(Boolean) as string[]}
+                />
+              ))}
+            </div>
+            
+            {/* Pagination */}
+            {pagination && pagination.totalPages > 1 && (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '12px',
+                marginTop: '40px',
+                padding: '20px'
+              }}>
+                <button
+                  onClick={() => setCurrentPage(prev => prev - 1)}
+                  disabled={!pagination.hasPrevious}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #E4E4E7',
+                    background: pagination.hasPrevious ? 'white' : '#f5f5f5',
+                    cursor: pagination.hasPrevious ? 'pointer' : 'not-allowed',
+                    color: pagination.hasPrevious ? '#242428' : '#999'
+                  }}
+                >
+                  Previous
+                </button>
+                
+                <span style={{ padding: '8px 16px', color: '#666' }}>
+                  Page {pagination.pageNumber} of {pagination.totalPages}
+                </span>
+                
+                <button
+                  onClick={() => setCurrentPage(prev => prev + 1)}
+                  disabled={!pagination.hasNext}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #E4E4E7',
+                    background: pagination.hasNext ? 'white' : '#f5f5f5',
+                    cursor: pagination.hasNext ? 'pointer' : 'not-allowed',
+                    color: pagination.hasNext ? '#242428' : '#999'
+                  }}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
       
       <Footer />

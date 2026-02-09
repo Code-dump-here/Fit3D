@@ -1,150 +1,32 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useProducts, useCategories } from '../hooks/useProducts';
 import './Shops.css';
 
-interface Product {
-  id: number;
-  name: string;
-  brand: string;
-  price: number;
-  image: string;
-  tags: string[];
-  isWishlisted: boolean;
-}
-
 const Shops: React.FC = () => {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(['All Items']);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<number>(500);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Mock product data
-  const products: Product[] = [
-    {
-      id: 1,
-      name: 'Fashion Item 1',
-      brand: 'Minimalist Co',
-      price: 55,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    },
-    {
-      id: 2,
-      name: 'Fashion Item 2',
-      brand: 'Street Vibes',
-      price: 164,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    },
-    {
-      id: 3,
-      name: 'Fashion Item 3',
-      brand: 'Vintage Soul',
-      price: 119,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    },
-    {
-      id: 4,
-      name: 'Fashion Item 4',
-      brand: 'Urban Edge',
-      price: 71,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    },
-    {
-      id: 5,
-      name: 'Fashion Item 5',
-      brand: 'Minimalist Co',
-      price: 145,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    },
-    {
-      id: 6,
-      name: 'Fashion Item 6',
-      brand: 'Street Vibes',
-      price: 166,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    },
-    {
-      id: 7,
-      name: 'Fashion Item 7',
-      brand: 'Vintage Soul',
-      price: 143,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    },
-    {
-      id: 8,
-      name: 'Fashion Item 8',
-      brand: 'Urban Edge',
-      price: 101,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    },
-    {
-      id: 9,
-      name: 'Fashion Item 9',
-      brand: 'Minimalist Co',
-      price: 59,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    },
-    {
-      id: 10,
-      name: 'Fashion Item 10',
-      brand: 'Street Vibes',
-      price: 132,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    },
-    {
-      id: 11,
-      name: 'Fashion Item 11',
-      brand: 'Vintage Soul',
-      price: 165,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    },
-    {
-      id: 12,
-      name: 'Fashion Item 12',
-      brand: 'Urban Edge',
-      price: 82,
-      image: '/api/placeholder/357/444',
-      tags: ['New Arrival', 'Trending'],
-      isWishlisted: false
-    }
-  ];
+  // Fetch products from API
+  const { products, pagination, isLoading, error } = useProducts({
+    page: currentPage,
+    size: 12,
+    categoryId: selectedCategory
+  });
+  
+  const { categories } = useCategories();
 
-  const categories = ['All Items', 'Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Accessories'];
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   const colors = ['#000000', '#ffffff', '#f7c7cc', '#93c5fd', '#86efac', '#fef3c7'];
 
-  const handleCategoryChange = (category: string) => {
-    if (category === 'All Items') {
-      setSelectedCategories(['All Items']);
-    } else {
-      const newCategories = selectedCategories.includes(category)
-        ? selectedCategories.filter(c => c !== category)
-        : [...selectedCategories.filter(c => c !== 'All Items'), category];
-      
-      setSelectedCategories(newCategories.length === 0 ? ['All Items'] : newCategories);
-    }
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId === selectedCategory ? '' : categoryId);
+    setCurrentPage(1);
   };
 
   const handleSizeChange = (size: string) => {
@@ -189,15 +71,24 @@ const Shops: React.FC = () => {
             <div className="filter-group">
               <h3 className="filter-title">Category</h3>
               <div className="filter-options">
+                <label className="filter-option">
+                  <input
+                    type="radio"
+                    checked={selectedCategory === ''}
+                    onChange={() => handleCategoryChange('')}
+                    className="filter-checkbox"
+                  />
+                  <span className="filter-label">All Items</span>
+                </label>
                 {categories.map(category => (
-                  <label key={category} className="filter-option">
+                  <label key={category.id} className="filter-option">
                     <input
-                      type="checkbox"
-                      checked={selectedCategories.includes(category)}
-                      onChange={() => handleCategoryChange(category)}
+                      type="radio"
+                      checked={selectedCategory === category.id}
+                      onChange={() => handleCategoryChange(category.id)}
                       className="filter-checkbox"
                     />
-                    <span className="filter-label">{category}</span>
+                    <span className="filter-label">{category.name}</span>
                   </label>
                 ))}
               </div>
@@ -237,66 +128,132 @@ const Shops: React.FC = () => {
               </div>
             </div>
 
-            {/* Price Range */}
-            <div className="filter-group">
-              <h3 className="filter-title">Price Range</h3>
-              <div className="price-range">
-                <div className="price-slider">
-                  <input
-                    type="range"
-                    min="0"
-                    max="500"
-                    value={priceRange}
-                    onChange={(e) => setPriceRange(Number(e.target.value))}
-                    className="slider"
-                  />
-                  <div className="price-labels">
-                    <span>$0</span>
-                    <span>$500</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          {/* Products Grid */}
-          <div className="products-section">
-            <div className="products-header">
-              <p className="products-count">12 products found</p>
-            </div>
-            
-            <div className="products-grid">
-              {products.map(product => (
-                <div key={product.id} className="product-card">
-                  <div className="product-image-container">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="product-image"
+              {/* Price Range */}
+              <div className="filter-group">
+                <h3 className="filter-title">Price Range</h3>
+                <div className="price-range">
+                  <div className="price-slider">
+                    <input
+                      type="range"
+                      min="0"
+                      max="500"
+                      value={priceRange}
+                      onChange={(e) => setPriceRange(Number(e.target.value))}
+                      className="slider"
                     />
-                    <button 
-                      className="wishlist-btn"
-                      onClick={() => toggleWishlist(product.id)}
-                      aria-label="Add to wishlist"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M8 14L7 13C3 9 1 7 1 5C1 3 3 1 5 1C6 1 7 2 8 3C9 2 10 1 11 1C13 1 15 3 15 5C15 7 13 9 9 13L8 14Z" stroke="currentColor" strokeWidth="1.5" fill={product.isWishlisted ? 'currentColor' : 'none'}/>
-                      </svg>
-                    </button>
-                    <div className="product-tags">
-                      {product.tags.map(tag => (
-                        <span key={tag} className="product-tag">{tag}</span>
-                      ))}
+                    <div className="price-labels">
+                      <span>$0</span>
+                      <span>$500</span>
                     </div>
                   </div>
-                  <div className="product-info">
-                    <p className="product-brand">{product.brand}</p>
-                    <h4 className="product-name">{product.name}</h4>
-                    <p className="product-price">${product.price}</p>
-                  </div>
+                  <p className="price-value">Max: ${priceRange}</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            </aside>
+  
+            {/* Products Section */}
+            <div className="products-section">
+              <div className="products-header">
+                <p className="products-count">
+                  {isLoading ? 'Loading...' : `${pagination?.totalCount || 0} products found`}
+                </p>
+              </div>
+            
+            {isLoading && (
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                padding: '60px',
+                color: '#666'
+              }}>
+                Loading products...
+              </div>
+            )}
+            
+            {error && (
+              <div style={{ 
+                padding: '20px',
+                backgroundColor: '#fee',
+                border: '1px solid #fcc',
+                borderRadius: '8px',
+                color: '#c00',
+                margin: '20px 0'
+              }}>
+                Error: {error}
+              </div>
+            )}
+            
+            {!isLoading && !error && (
+              <>
+                <div className="products-grid">
+                  {products.map(product => (
+                    <Link key={product.id} to={`/product/${product.id}`} className="product-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <div className="product-image-container">
+                        <img 
+                          src={product.imageUrl || '/api/placeholder/357/444'} 
+                          alt={product.name}
+                          className="product-image"
+                        />
+                        <button 
+                          className="wishlist-btn"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            console.log('Add to wishlist:', product.id);
+                          }}
+                          aria-label="Add to wishlist"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 14L7 13C3 9 1 7 1 5C1 3 3 1 5 1C6 1 7 2 8 3C9 2 10 1 11 1C13 1 15 3 15 5C15 7 13 9 9 13L8 14Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                          </svg>
+                        </button>
+                        <div className="product-tags">
+                          {product.isFeatured && <span className="product-tag">Featured</span>}
+                          {product.salePrice && product.salePrice < product.price && (
+                            <span className="product-tag">Sale</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="product-info">
+                        <p className="product-brand">{product.brand}</p>
+                        <h4 className="product-name">{product.name}</h4>
+                        <p className="product-price">${product.salePrice || product.price}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {pagination && pagination.totalPages > 1 && (
+                  <div className="pagination">
+                    <button 
+                      className="pagination-btn"
+                      onClick={() => setCurrentPage(prev => prev - 1)}
+                      disabled={!pagination.hasPrevious}
+                    >
+                      Previous
+                    </button>
+                    
+                    {[...Array(pagination.totalPages)].map((_, index) => (
+                      <button
+                        key={index + 1}
+                        className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
+                        onClick={() => setCurrentPage(index + 1)}
+                      >
+                        {index + 1}
+                      </button>
+                    ))}
+                    
+                    <button 
+                      className="pagination-btn"
+                      onClick={() => setCurrentPage(prev => prev + 1)}
+                      disabled={!pagination.hasNext}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
 
             {/* Pagination */}
             <div className="pagination">

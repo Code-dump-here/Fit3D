@@ -3,6 +3,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import ProductCard from '../components/ProductCard'
 import { Link } from 'react-router-dom'
+import { useProducts } from '../hooks/useProducts'
 import './HomePage.css'
 
 // Mock style categories - replace with actual data from API
@@ -37,67 +38,9 @@ const mockStyleCategories = [
   },
 ]
 
-// Mock product data - replace with actual data from API
-const mockTrendingProducts = [
-  {
-    id: 1,
-    brand: 'Local Brand Studio',
-    name: 'Oversized Cotton Tee',
-    price: 45,
-    badges: ['Streetwear', 'New'],
-  },
-  {
-    id: 2,
-    brand: 'Minimal Co.',
-    name: 'Linen Wide Pants',
-    price: 78,
-    badges: ['Minimalist'],
-  },
-  {
-    id: 3,
-    brand: 'Retro Finds',
-    name: 'Vintage Denim Jacket',
-    price: 120,
-    badges: ['Vintage', 'Trending'],
-  },
-  {
-    id: 4,
-    brand: 'Elegance House',
-    name: 'Silk Blend Blouse',
-    price: 95,
-    badges: ['Formal'],
-  },
-  {
-    id: 5,
-    brand: 'Cozy Studio',
-    name: 'Cropped Knit Cardigan',
-    price: 62,
-    badges: ['Minimalist', 'New'],
-  },
-  {
-    id: 6,
-    brand: 'Street Culture',
-    name: 'High-Waist Cargo Pants',
-    price: 85,
-    badges: ['Streetwear'],
-  },
-  {
-    id: 7,
-    brand: 'Bohemian Dreams',
-    name: 'Printed Midi Dress',
-    price: 110,
-    badges: ['Vintage'],
-  },
-  {
-    id: 8,
-    brand: 'Professional Line',
-    name: 'Tailored Blazer',
-    price: 145,
-    badges: ['Formal', 'Trending'],
-  },
-]
-
 function HomePage() {
+  // Fetch featured/trending products
+  const { products, isLoading } = useProducts({ page: 1, size: 8 })
   return (
     <div className="page home-page">
       <Header />
@@ -157,18 +100,34 @@ function HomePage() {
             </div>
             <Link to="/discovery" className="view-all-link">View All →</Link>
           </div>
-          <div className="products-grid">
-            {mockTrendingProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                brand={product.brand}
-                name={product.name}
-                price={product.price}
-                badges={product.badges}
-              />
-            ))}
-          </div>
+          
+          {isLoading ? (
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              padding: '60px',
+              color: '#666'
+            }}>
+              Loading products...
+            </div>
+          ) : (
+            <div className="products-grid">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  brand={product.brand}
+                  name={product.name}
+                  price={product.salePrice || product.price}
+                  image={product.imageUrl}
+                  badges={[
+                    product.isFeatured && 'Featured',
+                    product.salePrice && product.salePrice < product.price && 'Sale',
+                  ].filter(Boolean) as string[]}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
       

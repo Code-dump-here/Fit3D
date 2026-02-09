@@ -1,17 +1,62 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuthContext } from '../context/AuthContext'
+import { authService } from '../services/authService'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import './ProfilePage.css'
 
+interface UserProfile {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  role: number;
+  isVerified: boolean;
+}
+
 function ProfilePage() {
+  const navigate = useNavigate()
+  const { user, logout } = useAuthContext()
   const [activeTab, setActiveTab] = useState('account')
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  
   const [profileData, setProfileData] = useState({
-    fullName: 'Emma Rodriguez',
-    email: 'emma.rodriguez@fashionista.com',
+    fullName: '',
+    email: '',
+    phone: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   })
+
+  // Fetch user profile from API
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const data = await authService.getCurrentUser()
+        setUserProfile(data)
+        setProfileData({
+          fullName: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'Failed to load profile')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProfile()
+  }, [])
 
   // Mock data
   const mockOrderHistory = [
@@ -75,20 +120,85 @@ function ProfilePage() {
     }))
   }
 
-  const handleSaveChanges = (e: React.FormEvent) => {
+  const handleSaveChanges = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Saving profile changes:', profileData)
-    alert('Profile updated successfully!')
+    try {
+      setError(null)
+      // TODO: Implement update profile API when available
+      console.log('Saving profile changes:', profileData)
+      alert('Profile updated successfully!')
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to update profile')
+    }
   }
 
-  const handlePasswordChange = (e: React.FormEvent) => {
+  const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault()
     if (profileData.newPassword !== profileData.confirmPassword) {
       alert('Passwords do not match!')
       return
     }
-    console.log('Changing password')
-    alert('Password updated successfully!')
+    
+    try {
+      setError(null)
+      await authService.changePassword(user?.id || '', {
+        oldPassword: profileData.currentPassword,
+        newPassword: profileData.newPassword
+      })
+      alert('Password updated successfully!')
+      setProfileData(prev => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }))
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to change password')
+    }
+  }
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
+
+  if (isLoading) {
+    return (
+      <div className="page profile-page">
+        <Header />
+        <main className="profile-main">
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            minHeight: '400px' 
+          }}>
+            Loading profile...
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (error && !userProfile) {
+    return (
+      <div className="page profile-page">
+        <Header />
+        <main className="profile-main">
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            minHeight: '400px',
+            color: '#d32f2f'
+          }}>
+            Error: {error}
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
   }
 
   return (
@@ -106,8 +216,33 @@ function ProfilePage() {
               />
             </div>
             <div className="profile-info">
-              <h1 className="profile-name">Hello, {profileData.fullName}</h1>
-              <p className="profile-email">{profileData.email}</p>
+              <h1 className="profile-name">Hello, {userProfile?.fullName}</h1>
+              <p className="profile-email">{userProfile?.email}</p>
+              {userProfile?.isVerified ? (
+                <span className="verified-badge" style={{
+                  display: 'inline-block',
+                  padding: '4px 12px',
+                  background: '#4caf50',
+                  color: 'white',
+                  borderRadius: '12px',
+                  fontSize: '12px',
+                  marginTop: '8px'
+                }}>
+                  ✓ Verified
+                </span>
+              ) : (
+                <span className="unverified-badge" style={{
+                  display: 'inline-block',
+                  padding: '4px 12px',
+                  background: '#ff9800',
+                  color: 'white',
+                  borderRadius: '12px',
+                  fontSize: '12px',
+                  marginTop: '8px'
+                }}>
+                  Not Verified
+                </span>
+              )}
             </div>
           </div>
 
@@ -150,7 +285,7 @@ function ProfilePage() {
                 >
                   Payment & Addresses
                 </button>
-                <button className="nav-item logout-btn">
+                <button className="nav-item logout-btn" onClick={handleLogout}>
                   Logout
                 </button>
               </nav>
@@ -160,6 +295,18 @@ function ProfilePage() {
               {activeTab === 'account' && (
                 <div className="tab-content">
                   <h2>Profile Information</h2>
+                  {error && (
+                    <div style={{
+                      padding: '12px',
+                      backgroundColor: '#fee',
+                      border: '1px solid #fcc',
+                      borderRadius: '4px',
+                      color: '#c00',
+                      marginBottom: '16px'
+                    }}>
+                      {error}
+                    </div>
+                  )}
                   <form onSubmit={handleSaveChanges} className="profile-form">
                     <div className="form-group">
                       <label htmlFor="fullName" className="form-label">Full Name</label>
@@ -179,6 +326,20 @@ function ProfilePage() {
                         id="email"
                         name="email"
                         value={profileData.email}
+                        onChange={handleInputChange}
+                        className="form-input"
+                        disabled
+                        style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
+                      />
+                      <small style={{ color: '#666', fontSize: '12px' }}>Email cannot be changed</small>
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="phone" className="form-label">Phone Number</label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={profileData.phone}
                         onChange={handleInputChange}
                         className="form-input"
                       />
