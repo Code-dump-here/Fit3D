@@ -7,13 +7,11 @@ import './Discovery.css'
 
 function Discovery() {
   const [selectedCategory, setSelectedCategory] = useState<string>('')
-  const [searchQuery, setSearchQuery] = useState<string>('')
   const [currentPage, setCurrentPage] = useState(1)
   
   const { products, pagination, isLoading, error } = useProducts({ 
     page: currentPage, 
     size: 12,
-    search: searchQuery,
     categoryId: selectedCategory 
   })
   

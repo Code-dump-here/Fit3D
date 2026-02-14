@@ -45,11 +45,6 @@ const Shops: React.FC = () => {
     );
   };
 
-  const toggleWishlist = (productId: number) => {
-    // In a real app, this would update the backend
-    console.log('Toggle wishlist for product:', productId);
-  };
-
   return (
     <div className="shops-page">
       <Header />
