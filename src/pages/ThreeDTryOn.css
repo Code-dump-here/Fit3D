@@ -631,10 +631,10 @@
   background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
-  height: fit-content;
-  max-height: 400px;
+  height: 450px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .ai-stylist-header {

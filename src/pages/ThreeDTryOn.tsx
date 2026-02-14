@@ -1,14 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ChatBox from '../components/ChatBox';
+import type { ClothingContext } from '../services/aiService';
 import './ThreeDTryOn.css';
-
-interface ChatMessage {
-  id: number;
-  text: string;
-  isUser: boolean;
-  timestamp: Date;
-}
 
 const ThreeDTryOn: React.FC = () => {
   const [selectedGender, setSelectedGender] = useState<string>('Male');
@@ -17,11 +12,6 @@ const ThreeDTryOn: React.FC = () => {
   const [bodyType, setBodyType] = useState<string>('Average');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [zoom, setZoom] = useState<number>(100);
-  
-  // Chat functionality
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputMessage, setInputMessage] = useState<string>('');
-  const [isTyping, setIsTyping] = useState<boolean>(false);
 
   // Clothing catalog data
   const clothingItems = [
@@ -140,58 +130,22 @@ const ThreeDTryOn: React.FC = () => {
     console.log('Purchasing items:', selectedItems);
   };
 
-  // Chat functionality
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
-
-    const userMessage: ChatMessage = {
-      id: Date.now(),
-      text: inputMessage,
-      isUser: true,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-    setIsTyping(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse: ChatMessage = {
-        id: Date.now() + 1,
-        text: generateAIResponse(),
-        isUser: false,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-    }, 1500);
-  };
-
-  const generateAIResponse = (): string => {
-    const responses = [
-      "Great choice! I'd recommend pairing that with some accessories for a complete look.",
-      "That would look amazing! Have you considered adding a statement piece to make it pop?",
-      "I love that style! For a more polished look, try adding some layering pieces.",
-      "Perfect for that occasion! Let me suggest some color combinations that would work well.",
-      "Excellent taste! That outfit would be perfect with the right shoes and accessories."
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
-  };
-
-  const handleQuickAction = (action: string) => {
-    const quickMessages = {
-      'Date Night': "I'm looking for a romantic outfit for a date night. Something elegant but not too formal.",
-      'Workwear': "I need professional attire for the office. Something stylish yet appropriate for meetings.",
-      'Street Look': "I want a trendy street style outfit that's comfortable but fashion-forward.",
-      'Casual Weekend': "I'm looking for a relaxed weekend outfit that's comfy but still put-together."
-    };
-    
-    const message = quickMessages[action as keyof typeof quickMessages];
-    if (message) {
-      setInputMessage(message);
-    }
-  };
+  // Build clothing context for the AI ChatBox
+  const clothingContext: ClothingContext = useMemo(() => ({
+    availableItems: clothingItems.map((item) => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      colors: item.colors,
+    })),
+    selectedItems,
+    userProfile: {
+      gender: selectedGender,
+      height,
+      weight,
+      bodyType,
+    },
+  }), [clothingItems, selectedItems, selectedGender, height, weight, bodyType]);
 
   return (
     <div className="threed-tryon">
@@ -289,86 +243,7 @@ const ThreeDTryOn: React.FC = () => {
 
           {/* AI Stylist Panel */}
           <div className="ai-stylist-panel">
-            <div className="ai-stylist-header">
-              <h2 className="ai-stylist-title">AI Stylist</h2>
-            </div>
-            
-            <div className="chat-content">
-              <div className="welcome-message">
-                <p className="welcome-text">
-                  Hi! I'm your AI stylist. What kind of outfit are you looking for today?
-                </p>
-              </div>
-
-              <div className="quick-actions">
-                <p className="quick-actions-title">Quick Suggestions:</p>
-                <button 
-                  className="quick-action-btn"
-                  onClick={() => handleQuickAction('Date Night')}
-                >
-                  💕 Date Night
-                </button>
-                <button 
-                  className="quick-action-btn"
-                  onClick={() => handleQuickAction('Workwear')}
-                >
-                  💼 Workwear
-                </button>
-                <button 
-                  className="quick-action-btn"
-                  onClick={() => handleQuickAction('Street Look')}
-                >
-                  🔥 Street Look
-                </button>
-                <button 
-                  className="quick-action-btn"
-                  onClick={() => handleQuickAction('Casual Weekend')}
-                >
-                  ☀️ Casual Weekend
-                </button>
-              </div>
-
-              <div className="chat-messages">
-                {messages.map((message) => (
-                  <div 
-                    key={message.id} 
-                    className={`message ${message.isUser ? 'user' : 'ai'}`}
-                  >
-                    <p className="message-text">{message.text}</p>
-                  </div>
-                ))}
-                {isTyping && (
-                  <div className="message ai">
-                    <p className="message-text">AI is typing...</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="chat-input-area">
-              <div className="chat-input-container">
-                <textarea
-                  className="chat-input"
-                  placeholder="Describe your ideal outfit..."
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                  rows={1}
-                />
-                <button 
-                  className="send-btn"
-                  onClick={handleSendMessage}
-                  disabled={!inputMessage.trim() || isTyping}
-                >
-                  <span>📤</span>
-                </button>
-              </div>
-            </div>
+            <ChatBox clothingContext={clothingContext} />
           </div>
         </div>
 
